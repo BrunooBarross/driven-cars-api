@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -53,8 +54,22 @@ public class CarController {
         try {
             repository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
+    }
+
+    @PutMapping("/{id}")
+    public void updateCar(@PathVariable Long id, @Valid @RequestBody CarDTO req) {
+        repository.findById(id).map(car -> {
+            car.setModelo(req.modelo());
+            car.setFabricante(req.fabricante());
+            car.setDataFabricacao(req.dataFabricacao());
+            car.setValor(req.valor());
+            car.setAnoModelo(req.anoModelo());
+
+            return repository.save(car);
+        });
+
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
